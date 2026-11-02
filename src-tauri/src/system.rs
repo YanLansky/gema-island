@@ -59,7 +59,7 @@ mod imp {
         unsafe {
             Ok(Volume {
                 level: ep.GetMasterVolumeLevelScalar()?,
-                muted: ep.GetMute()? != 0,
+                muted: ep.GetMute()?.as_bool(),
             })
         }
     }
@@ -69,8 +69,8 @@ mod imp {
         let level = level.clamp(0.0, 1.0);
         unsafe {
             ep.SetMasterVolumeLevelScalar(level, std::ptr::null())?;
-            if level > 0.0 && ep.GetMute()? != 0 {
-                ep.SetMute(0, std::ptr::null())?;
+            if level > 0.0 && ep.GetMute()?.as_bool() {
+                ep.SetMute(false, std::ptr::null())?;
             }
         }
         get_volume()
