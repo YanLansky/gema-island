@@ -325,10 +325,33 @@ async function loadLyrics(t) {
   if (!tauri) r = demoLyrics();
   else {
     try {
-      r = await findLyrics(invoke, { title: t.title, artist: t.artist, album: t.album, durationMs: t.durationMs });
-    } catch {
-      r = { synced: null, plain: null };
+      r = await findLyrics(invoke, {
+        title: t.title,
+        artist: t.artist,
+        album: t.album,
+        durationMs: t.durationMs,
+        trustDuration: t.source !== 'discord',
+      });
+    } catch (e) {
+      r = { synced: null, plain: null, error: String(e) };
     }
+    // Catatan pencarian terakhir, ditampilkan di Pengaturan untuk memeriksa
+    const info = {
+      at: Date.now(),
+      source: t.source,
+      title: t.title,
+      artist: t.artist,
+      searched: r.searched || '',
+      found: r.source || null,
+      nearest: r.nearest || null,
+      candidates: r.candidates ?? 0,
+      error: r.error || null,
+      kind: r.synced ? 'synced' : r.plain ? 'plain' : 'none',
+    };
+    try {
+      localStorage.setItem('lansky.lyrics.last', JSON.stringify(info));
+    } catch {}
+    emit('lyrics-debug', info);
   }
   if (st.lyr.key !== key) return;
   st.lyr = {
@@ -337,6 +360,8 @@ async function loadLyrics(t) {
     lines: r.synced,
     plain: r.plain,
     idx: -1,
+    searched: r.searched || '',
+    error: r.error || null,
   };
   renderLyrics();
   tick();
@@ -350,7 +375,7 @@ function renderLyrics() {
   lyrY.jump(0);
   msg.textContent =
     L.status === 'loading' ? 'Mencari lirik…' :
-    L.status === 'none' ? 'Lirik tidak ditemukan' :
+    L.status === 'none' ? (L.error ? L.error : `Lirik tidak ditemukan${L.searched ? `\nDicari: ${L.searched}` : ''}`) :
     L.status === 'instrumental' ? 'Instrumental ♪' : '';
   if (L.status === 'synced') {
     const frag = document.createDocumentFragment();

@@ -207,7 +207,7 @@ img { display: block; }
 .lyrics-list p.now { color: var(--fg); transform: scale(1); filter: none; }
 .lyrics-list p.near { color: var(--fg-2); filter: none; }
 .lyrics-list.plain p { cursor: default; color: var(--fg-2); transform: none; filter: none; font-size: 14px; }
-.lyrics-msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--fg-3); font-size: 13px; text-align: center; padding: 0 12px; }
+.lyrics-msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--fg-3); font-size: 13px; text-align: center; padding: 0 12px; white-space: pre-line; line-height: 1.5; }
 
 .today { display: flex; flex-direction: column; justify-content: center; width: 100%; padding-left: 6px; }
 .big-clock { font: 300 52px/1 var(--font-display); letter-spacing: -1px; font-variant-numeric: tabular-nums; }

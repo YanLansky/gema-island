@@ -1,6 +1,6 @@
 [package]
 name = "lansky-island"
-version = "0.1.0"
+version = "0.1.1"
 description = "Lansky Island - dynamic island untuk Windows"
 authors = ["YanLansky"]
 edition = "2021"

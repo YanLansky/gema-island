@@ -96,10 +96,17 @@ export function parseNowPlaying(msg) {
   const hasHint = PLAY_RE.test(text) || !!url || (msg.embeds || []).some((e) => e.thumbnail || e.image);
   if (!hasHint) return null;
 
-  // Artis: "Judul by Artis", kolom Artist/Author, atau nama author embed
-  const esc = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').slice(0, 80);
-  const by = text.match(new RegExp(`${esc}[^\\n]*?\\b(?:by|oleh)\\s+([^\\n•·|\\[]+)`, 'i')) || text.match(/\b(?:by|oleh)\s+\*{0,2}([^\n*•·|\[]+)/i);
-  if (by) artist = stripMd(by[1]).replace(/\s*\(.*$/, '');
+  // Artis: "Judul by Artis", kolom Artist/Author, atau nama author embed.
+  // "Requested by <nama>" itu orang yang meminta lagu, bukan penyanyinya.
+  const REQ_BEFORE = /(request(?:ed)?|added|queued|enqueued|played|asked|diminta|ditambahkan|diputar|dari permintaan)\s*$/i;
+  for (const m of text.matchAll(/\b(by|oleh)\s+\*{0,2}([^\n*•·|\[]+)/gi)) {
+    const before = text.slice(Math.max(0, m.index - 24), m.index);
+    if (REQ_BEFORE.test(before)) continue;
+    const a = stripMd(m[2]).replace(/\s*\(.*$/, '').trim();
+    if (!a || a.startsWith('@') || /^<@/.test(m[2]) || /requested|diminta/i.test(a)) continue;
+    artist = a;
+    break;
+  }
   if (!artist) {
     for (const e of msg.embeds || []) {
       const f = (e.fields || []).find((f) => /^(artist|artis|author|uploader|channel|penyanyi)$/i.test(stripMd(f.name)));

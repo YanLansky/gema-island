@@ -112,6 +112,30 @@ try {
   paintLast(JSON.parse(localStorage.getItem('lansky.discord.last') || 'null'));
 } catch {}
 listen('discord-debug', (e) => paintLast(e.payload));
-$('dCopy').addEventListener('click', () => navigator.clipboard?.writeText($('dLast').textContent));
+function paintLyrics(l) {
+  if (!l) return;
+  const when = new Date(l.at).toLocaleTimeString('id-ID');
+  const res = l.kind === 'synced' ? `Ketemu (tersinkron): ${l.found}` : l.kind === 'plain' ? `Ketemu (tanpa waktu): ${l.found}` : l.error ? `Gagal: ${l.error}` : 'Tidak ketemu';
+  $('lLast').textContent = [
+    `[${when}] Sumber: ${l.source === 'discord' ? 'Discord' : 'laptop'}`,
+    `Judul asli: ${l.title}${l.artist ? ' | Artis: ' + l.artist : ''}`,
+    `Dicari sebagai: ${l.searched || '-'}`,
+    `Hasil: ${res}`,
+    l.nearest ? `Paling mirip (ditolak): ${l.nearest}` : '',
+    `Kandidat diperiksa: ${l.candidates}`,
+  ].filter(Boolean).join('\n');
+}
+try {
+  paintLyrics(JSON.parse(localStorage.getItem('lansky.lyrics.last') || 'null'));
+} catch {}
+listen('lyrics-debug', (e) => paintLyrics(e.payload));
+$('dCopy').addEventListener('click', async () => {
+  const text = `${$('dLast').textContent}\n\n--- Lirik ---\n${$('lLast').textContent}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    $('dCopy').textContent = 'Tersalin';
+    setTimeout(() => ($('dCopy').textContent = 'Salin semua'), 1500);
+  } catch {}
+});
 
 $('quit').addEventListener('click', () => invoke('quit_app'));
