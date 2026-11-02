@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pengaturan Lansky Island</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+  <header>
+    <div class="logo"><i></i><i></i></div>
+    <div>
+      <h1>Lansky Island</h1>
+      <p class="sub">Pengaturan · <span id="ver">v0.1.0</span></p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Umum</h2>
+      <label class="row"><span><b>Jalankan saat Windows mulai</b><small>Island langsung muncul setiap kali kamu login.</small></span><input type="checkbox" id="autostart" class="switch" /></label>
+      <div class="row">
+        <span><b>Bentuk island</b><small>Dynamic melayang seperti pil, Notch menempel di tepi atas layar.</small></span>
+        <div class="seg" id="mode"><button data-v="dynamic">Dynamic</button><button data-v="notch">Notch</button></div>
+      </div>
+      <div class="row">
+        <span><b>Ukuran</b><small id="scaleLbl">100%</small></span>
+        <input type="range" id="scale" min="75" max="130" step="5" />
+      </div>
+      <label class="row"><span><b>Sembunyi saat layar penuh</b><small>Saat main game atau menonton video. Arahkan kursor ke tepi atas untuk memunculkannya.</small></span><input type="checkbox" id="hideFullscreen" class="switch" /></label>
+      <label class="row"><span><b>Format 24 jam</b></span><input type="checkbox" id="clock24" class="switch" /></label>
+    </section>
+
+    <section>
+      <h2>Musik &amp; lirik</h2>
+      <label class="row"><span><b>Lirik di island</b><small>Baris yang sedang dinyanyikan tampil di island kecil, dan island melebar mengikuti panjang barisnya.</small></span><input type="checkbox" id="lyricsPill" class="switch" /></label>
+      <label class="row"><span><b>Kartu saat lagu berganti</b></span><input type="checkbox" id="trackToast" class="switch" /></label>
+      <label class="row"><span><b>Warna dari sampul album</b></span><input type="checkbox" id="accentFromArt" class="switch" /></label>
+      <p class="note">Lirik diambil dari LRCLIB (lrclib.net), perpustakaan lirik gratis dari komunitas. Yang dikirim hanya judul, artis, dan durasi lagu.</p>
+    </section>
+
+    <section>
+      <h2>Teman kecil</h2>
+      <label class="row"><span><b>Robot mata</b><small>Muncul saat tidak ada lagu. Kalau dimatikan, island menampilkan jam.</small></span><input type="checkbox" id="mascot" class="switch" /></label>
+    </section>
+
+    <section>
+      <h2>Discord <span class="status" id="dStatus">Nonaktif</span></h2>
+      <label class="row"><span><b>Tampilkan lagu dari bot musik Discord</b><small>Lirik lagu yang diputar Jockie (atau bot lain) di voice channel.</small></span><input type="checkbox" id="dEnabled" class="switch" /></label>
+
+      <div class="field">
+        <label for="dToken">Token bot milikmu</label>
+        <div class="pw"><input type="password" id="dToken" placeholder="Tempel token dari Discord Developer Portal" autocomplete="off" spellcheck="false" /><button id="dShow" type="button">Lihat</button></div>
+        <small>Disimpan hanya di laptop ini. Jangan bagikan token ke siapa pun.</small>
+      </div>
+      <div class="field">
+        <label for="dBots">Nama bot musik</label>
+        <input id="dBots" placeholder="Jockie, Chip" />
+        <small>Pisahkan dengan koma. Cukup sebagian nama, misalnya "Jockie" cocok untuk semua Jockie Music.</small>
+      </div>
+      <div class="field">
+        <label for="dUser">ID Discord kamu (opsional, disarankan)</label>
+        <input id="dUser" placeholder="contoh: 412345678901234567" inputmode="numeric" />
+        <small>Supaya hanya lagu dari voice channel tempat kamu berada yang ditampilkan. Cara mendapatkannya ada di panduan di bawah.</small>
+      </div>
+      <div class="row">
+        <span><b>Kalau Spotify/YouTube juga sedang diputar</b></span>
+        <div class="seg" id="dPriority"><button data-v="discord">Utamakan Discord</button><button data-v="system">Utamakan laptop</button></div>
+      </div>
+      <div class="row">
+        <span><b>Geser waktu lirik Discord</b><small>Positif kalau lirik terlambat, negatif kalau kecepatan. Bisa juga diatur dari tombol ±0,5 dtk di island.</small></span>
+        <div class="num"><input type="number" id="dOffset" step="100" /><span>ms</span></div>
+      </div>
+      <label class="row"><span><b>Deteksi otomatis semua bot</b><small>Coba baca pesan "now playing" dari bot apa pun. Bisa salah tangkap, jadi biarkan mati kalau nama bot sudah diisi.</small></span><input type="checkbox" id="dAuto" class="switch" /></label>
+      <div class="actions"><button id="dReconnect" class="btn">Sambung ulang</button></div>
+
+      <details>
+        <summary>Pesan terakhir dari bot musik (untuk memeriksa)</summary>
+        <pre id="dLast">Belum ada pesan yang tertangkap.</pre>
+        <button id="dCopy" class="btn small">Salin</button>
+      </details>
+
+      <details class="guide">
+        <summary>Panduan: membuat bot Discord pribadi (sekali saja, ±5 menit)</summary>
+        <ol>
+          <li>Buka <b>discord.com/developers/applications</b> di browser dan login.</li>
+          <li>Klik <b>New Application</b>, beri nama (misalnya <i>Lansky</i>), centang persetujuan, lalu <b>Create</b>.</li>
+          <li>Di menu kiri pilih <b>Bot</b>. Klik <b>Reset Token</b>, lalu <b>Copy</b>. Tempel di kolom <i>Token bot</i> di atas.</li>
+          <li>Masih di halaman Bot, gulir ke <b>Privileged Gateway Intents</b> dan nyalakan <b>Message Content Intent</b>. Klik <b>Save Changes</b>.</li>
+          <li>Di menu kiri pilih <b>OAuth2</b> → <b>URL Generator</b>. Centang <b>bot</b>, lalu di <i>Bot Permissions</i> centang <b>View Channels</b> dan <b>Read Message History</b>.</li>
+          <li>Salin URL di paling bawah, buka di browser, pilih server tempat kamu dan teman biasa memutar musik, lalu <b>Authorize</b>.</li>
+          <li>Untuk ID Discord-mu: di Discord buka <b>User Settings → Advanced</b>, nyalakan <b>Developer Mode</b>. Lalu klik kanan namamu → <b>Copy User ID</b>.</li>
+          <li>Nyalakan sakelar Discord di atas. Status akan berubah jadi <b>Tersambung</b>. Putar lagu lewat Jockie, liriknya muncul di island.</li>
+        </ol>
+        <p class="note">Bot ini hanya membaca pesan di channel yang bisa dilihatnya dan tidak mengirim apa pun. Bot hanya "online" saat Lansky Island berjalan di laptopmu.</p>
+      </details>
+    </section>
+
+    <section>
+      <h2>Tentang</h2>
+      <p class="note">Lansky Island dibuat untuk YanLansky. Lirik oleh LRCLIB. Lagu dari Spotify, YouTube, dan pemutar lain dibaca dari panel media Windows.</p>
+      <div class="actions"><button id="quit" class="btn danger">Keluar dari Lansky Island</button></div>
+    </section>
+  </main>
+  <script type="module" src="js/settings.js"></script>
+</body>
+</html>

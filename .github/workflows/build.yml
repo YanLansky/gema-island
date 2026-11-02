@@ -1,0 +1,64 @@
+name: Rakit Lansky Island
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Siapkan Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache hasil rakitan Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Siapkan Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Rakit aplikasi
+        run: npx --yes @tauri-apps/cli@^2 build
+        env:
+          CI: true
+
+      - name: Kumpulkan file
+        shell: bash
+        run: |
+          mkdir -p out
+          cp src-tauri/target/release/bundle/nsis/*-setup.exe "out/LanskyIsland-Setup.exe"
+          cp src-tauri/target/release/lansky-island.exe "out/LanskyIsland-Portable.exe"
+          ls -la out
+
+      - name: Simpan sebagai artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LanskyIsland
+          path: out/*.exe
+
+      - name: Terbitkan di halaman Releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete terbaru --yes --cleanup-tag || true
+          git push origin :refs/tags/terbaru || true
+          gh release create terbaru out/LanskyIsland-Setup.exe out/LanskyIsland-Portable.exe \
+            --title "Lansky Island (terbaru)" \
+            --notes "Rakitan otomatis dari commit ${GITHUB_SHA::7}. Unduh **LanskyIsland-Setup.exe**, buka, lalu ikuti petunjuknya. Muncul 'Windows protected your PC'? Klik More info → Run anyway." \
+            --target "$GITHUB_SHA" \
+            --latest

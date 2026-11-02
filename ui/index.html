@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lansky Island</title>
+  <link rel="stylesheet" href="island.css" />
+</head>
+<body>
+  <div id="stage">
+    <div id="shell">
+      <i class="ear left"></i><i class="ear right"></i>
+      <div id="island">
+
+        <!-- Saat sepi: robot mata atau jam -->
+        <div class="layer" data-view="idle">
+          <div class="mascot" id="mascot">
+            <i class="eye l"><b></b></i><i class="eye r"><b></b></i>
+            <span class="zz">z</span>
+          </div>
+          <div class="mini-clock" id="miniClock">--.--</div>
+        </div>
+
+        <!-- Lagu berjalan, island kecil -->
+        <div class="layer" data-view="compact">
+          <img class="art-mini" id="artMini" alt="" />
+          <div class="pill-lyric" id="pillLyric"><span class="cur"></span><span class="old"></span></div>
+          <div class="bars" id="bars"><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <!-- Kartu singkat saat lagu berganti -->
+        <div class="layer" data-view="toast">
+          <img class="art-toast" id="artToast" alt="" />
+          <div class="toast-text">
+            <div class="toast-title" id="toastTitle"></div>
+            <div class="toast-artist" id="toastArtist"></div>
+          </div>
+          <div class="bars big" id="barsToast"><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <!-- Overlay volume / baterai -->
+        <div class="layer" data-view="hud">
+          <span class="hud-icon" id="hudIcon"></span>
+          <div class="hud-bar"><div id="hudFill"></div></div>
+          <span class="hud-val" id="hudVal"></span>
+        </div>
+
+        <!-- Island terbuka saat disentuh kursor -->
+        <div class="layer" data-view="expanded">
+          <div class="pages" id="pages">
+            <section class="page" data-tab="music">
+              <div class="music-left">
+                <div class="np">
+                  <img class="art-big" id="artBig" alt="" />
+                  <div class="np-text">
+                    <div class="np-title" id="npTitle"><span></span></div>
+                    <div class="np-artist" id="npArtist"></div>
+                    <div class="np-source" id="npSource"></div>
+                  </div>
+                </div>
+                <div class="progress">
+                  <span class="t" id="tNow">0:00</span>
+                  <div class="track" id="seek"><div class="fill" id="seekFill"></div><div class="knob" id="seekKnob"></div></div>
+                  <span class="t" id="tLeft">-0:00</span>
+                </div>
+                <div class="controls" id="controls">
+                  <button class="ctl" data-act="prev" title="Sebelumnya"></button>
+                  <button class="ctl play" data-act="toggle" title="Putar/Jeda"></button>
+                  <button class="ctl" data-act="next" title="Berikutnya"></button>
+                </div>
+                <div class="controls offset" id="offsetCtl">
+                  <button class="chip" data-off="-500" title="Lirik terlalu cepat">−0,5 dtk</button>
+                  <span class="offset-label">sinkron lirik</span>
+                  <button class="chip" data-off="500" title="Lirik terlambat">+0,5 dtk</button>
+                </div>
+              </div>
+              <div class="lyrics" id="lyrics">
+                <div class="lyrics-list" id="lyricsList"></div>
+                <div class="lyrics-msg" id="lyricsMsg"></div>
+              </div>
+            </section>
+
+            <section class="page" data-tab="today">
+              <div class="today">
+                <div class="big-clock" id="bigClock">--.--</div>
+                <div class="today-date" id="todayDate"></div>
+                <div class="chips" id="todayChips"></div>
+              </div>
+            </section>
+          </div>
+          <nav class="tabbar" id="tabbar">
+            <button data-tab="music" title="Musik"></button>
+            <button data-tab="today" title="Hari ini"></button>
+            <span class="spacer"></span>
+            <button class="gear" id="gear" title="Pengaturan"></button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span id="measure" aria-hidden="true"></span>
+  <script type="module" src="js/island.js"></script>
+</body>
+</html>
