@@ -849,11 +849,73 @@ function startPreview() {
       st.lyr.idx = -2;
     }
   }, 500);
-  document.addEventListener('mousemove', (e) => {
-    const inside = currentRects.some((r) => e.clientX >= r.x && e.clientX <= r.x + r.w && e.clientY >= r.y && e.clientY <= r.y + r.h);
-    onPointer({ x: e.clientX, y: e.clientY, inside });
+  // Koordinat kursor relatif ke panggung island (bisa diskalakan di halaman pratinjau)
+  const local = (e) => {
+    const r = $('stage').getBoundingClientRect();
+    const k = r.width / WIN_W || 1;
+    return { x: (e.clientX - r.left) / k, y: (e.clientY - r.top) / k };
+  };
+  const hit = (p) => currentRects.some((r) => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h);
+  document.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    const p = local(e);
+    onPointer({ ...p, inside: hit(p) });
+  });
+  document.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch') return;
+    const p = local(e);
+    onPointer({ ...p, inside: hit(p) });
   });
   invokeOverride();
+  window.lanskyDemo = demoApi();
+}
+
+function demoApi() {
+  const song = (title, artist, ms = 30000) => {
+    st.disc = null;
+    st.sys = { ...st.sys, active: true, title, artist, track_key: `demo:${title}`, playing: true, position_ms: 0, sent_at: Date.now(), duration_ms: ms };
+    st.lyr.key = null;
+    scheduleTick();
+  };
+  return {
+    setMode(m) {
+      S.mode = m;
+      applySettings();
+    },
+    volume() {
+      const v = 0.3 + Math.random() * 0.6;
+      showHud(v < 0.05 ? 'mute' : 'vol', v);
+    },
+    charge() {
+      mascot.setPower({ has_battery: true, plugged: true, charging: true, percent: 72 });
+      showHud('bolt', 0.72, '72%');
+    },
+    lowBattery() {
+      mascot.setPower({ has_battery: true, plugged: false, charging: false, percent: 14 });
+      showHud('battery', 0.14, '14%');
+    },
+    stop() {
+      st.sys.active = false;
+      st.disc = null;
+      st.pausedSince = 0;
+      mascot.setPower({ has_battery: true, plugged: true, charging: false, percent: 80 });
+      scheduleTick();
+    },
+    nextSong() {
+      const list = [['Lampu Kota', 'Lansky Island (contoh)'], ['Hujan Sore', 'Band Contoh'], ['Senja di Voice Channel', 'Teman Discord']];
+      const i = (list.findIndex((x) => x[0] === st.sys.title) + 1) % list.length;
+      song(list[i][0], list[i][1]);
+    },
+    discord() {
+      st.sys.active = false;
+      st.disc = { active: true, title: 'Band Contoh - Hujan Sore', artist: '', art: null, guild: 'Server Teman', durationMs: 30000, startedAt: Date.now(), playing: true, anchorPos: 0, anchorAt: Date.now() };
+      st.lyr.key = null;
+      scheduleTick();
+    },
+    play() {
+      song('Lampu Kota', 'Lansky Island (contoh)');
+    },
+  };
 }
 
 function invokeOverride() {
