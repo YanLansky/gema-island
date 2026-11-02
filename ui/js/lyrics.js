@@ -29,6 +29,8 @@ export function cleanArtist(a = '') {
 // "Artis - Judul" (umum di YouTube dan bot Discord) → { artist, title }
 export function splitArtistTitle(title, artist) {
   const t = cleanTitle(title);
+  const by = t.match(/^(.+?)\s+(?:by|oleh)\s+(.+)$/i);
+  if (by) return { artist: cleanArtist(by[2]), title: cleanTitle(by[1]), altArtist: cleanArtist(artist || '') };
   const m = t.match(/^(.+?)\s+[-–—]\s+(.+)$/);
   if (m) {
     const a = cleanArtist(artist || '');

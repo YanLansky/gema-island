@@ -99,7 +99,7 @@ export function parseNowPlaying(msg) {
   // Artis: "Judul by Artis", kolom Artist/Author, atau nama author embed.
   // "Requested by <nama>" itu orang yang meminta lagu, bukan penyanyinya.
   const REQ_BEFORE = /(request(?:ed)?|added|queued|enqueued|played|asked|diminta|ditambahkan|diputar|dari permintaan)\s*$/i;
-  for (const m of text.matchAll(/\b(by|oleh)\s+\*{0,2}([^\n*•·|\[]+)/gi)) {
+  for (const m of text.matchAll(/\b(by|oleh)\s+\*{0,2}([^\n*•·|\[\]()<>]+)/gi)) {
     const before = text.slice(Math.max(0, m.index - 24), m.index);
     if (REQ_BEFORE.test(before)) continue;
     const a = stripMd(m[2]).replace(/\s*\(.*$/, '').trim();
@@ -121,6 +121,14 @@ export function parseNowPlaying(msg) {
     if (a && !GENERIC_RE.test(a) && !PLAY_RE.test(a) && a.toLowerCase() !== (msg.author?.username || '').toLowerCase()) artist = a;
   }
   title = title.replace(/\s*-\s*YouTube$/i, '').trim();
+  // Banyak bot menulis "Judul by Artis" dalam satu teks; pisahkan
+  const byIn = title.match(/^(.+?)\s+(?:by|oleh)\s+(.+)$/i);
+  if (byIn) {
+    if (!artist || artist.toLowerCase() === byIn[2].trim().toLowerCase()) {
+      title = byIn[1].trim();
+      artist = byIn[2].trim();
+    }
+  }
 
   // Durasi dan posisi ("1:23 / 3:45", "Duration: 3:45", "[3:45]")
   let durationMs = 0;
